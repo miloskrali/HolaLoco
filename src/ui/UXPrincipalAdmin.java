@@ -18,7 +18,11 @@ import excepciones.DAOException;
 
 public class UXPrincipalAdmin extends JFrame implements ActionListener {
 
-    private UsuarioDAO usuarioDAO;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private UsuarioDAO usuarioDAO;
     private CuentaDAO cuentaDAO;
     private TarjetaDAO tarjetaDAO;
     private JTabbedPane tabbedPane;

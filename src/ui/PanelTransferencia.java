@@ -16,7 +16,11 @@ import excepciones.DAOException;
 import excepciones.SaldoInsuficienteException;
 
 public class PanelTransferencia extends JPanel {
-    private CuentaDAO cuentaDAO;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private CuentaDAO cuentaDAO;
     private JComboBox<String> comboBoxCuentasOrigen;
     private JComboBox<String> comboBoxCuentasDestino;
     private JTextField textFieldMonto;

@@ -6,6 +6,7 @@ import entidades.Tarjeta;
 import excepciones.DAOException;
 import excepciones.DuplicadoException;
 import excepciones.ServicioException;
+import excepciones.UsuarioNoExistenteException;
 
 public class TarjetaService {
 
@@ -19,7 +20,7 @@ public class TarjetaService {
         return tarjetaDAO.listarTodasLasTarjetas();
     }
 
-    public void agregarTarjeta(Tarjeta tarjeta) throws DAOException, DuplicadoException {
+    public void agregarTarjeta(Tarjeta tarjeta) throws DAOException, DuplicadoException, UsuarioNoExistenteException {
         tarjetaDAO.agregarTarjeta(tarjeta);
     }
 
@@ -45,7 +46,15 @@ public class TarjetaService {
     public void agregarTarjetaNueva(Tarjeta tarjeta) throws ServicioException, DuplicadoException {
         TarjetaDAO d = new TarjetaDAOH2();
         try {
-            d.agregarTarjeta(tarjeta);
+            try {
+				d.agregarTarjeta(tarjeta);
+			} catch (DuplicadoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UsuarioNoExistenteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } catch (DAOException e) {
             throw new ServicioException(e);
         }

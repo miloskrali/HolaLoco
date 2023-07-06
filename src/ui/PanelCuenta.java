@@ -14,13 +14,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import db.CuentaDAO;
-import db.CuentaDAOH2;
 import entidades.Cuenta;
-import entidades.Transferencia;
+import excepciones.DAOException;
+import excepciones.DuplicadoException;
+import excepciones.UsuarioNoExistenteException;
 
 public class PanelCuenta extends JPanel implements ActionListener {
 
-    private JTable tablaCuenta;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTable tablaCuenta;
     private TableModelCuenta modelo;
     private CuentaDAO cuentaDAO;
     private JScrollPane scroll;
@@ -93,18 +98,33 @@ public class PanelCuenta extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
     	if (e.getSource() == buttonBorrar) {
             int filaSeleccionada = this.tablaCuenta.getSelectedRow();
-            Cuenta cuenta = this.modelo.getContenido().get(filaSeleccionada);
-
-            System.out.println(cuenta);
-
+            int clave = (int) modelo.getValueAt(filaSeleccionada, 2);
             this.modelo.getContenido().remove(filaSeleccionada);
             modelo.fireTableDataChanged();
+            try {
+				cuentaDAO.borrarCuenta(clave);
+			} catch (DAOException e1) {
+				e1.printStackTrace();
+			}
         } else if (e.getSource() == buttonAgregar) {
             Cuenta nuevaCuenta = crearCuenta();
-            modelo.getContenido().add(nuevaCuenta);
-            modelo.fireTableDataChanged();
+            try {
+				try {
+					cuentaDAO.crearCuenta(nuevaCuenta);
+					modelo.getContenido().add(nuevaCuenta);
+		            modelo.fireTableDataChanged();
+				} catch (UsuarioNoExistenteException e1) {
+					JOptionPane.showMessageDialog(this, "El numero de cuenta no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			} catch (DuplicadoException ex) {
+            	JOptionPane.showMessageDialog(this, "El numero de cuenta ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (DAOException e1) {
+				e1.printStackTrace();
+			}
+            
         }
     }
+    
 
     private Cuenta crearCuenta() {
         int dni = obtenerDniDesdeInput();

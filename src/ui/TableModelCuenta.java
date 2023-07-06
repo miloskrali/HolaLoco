@@ -9,6 +9,10 @@ import entidades.Cuenta;
 
 public class TableModelCuenta extends AbstractTableModel{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final int DNI = 0;
 	private static final int TIPOCUENTA = 1;
 	private static final int NUMEROCUENTA = 2;

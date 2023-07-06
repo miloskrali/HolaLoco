@@ -27,7 +27,11 @@ import db.UsuarioDAOH2;
 import entidades.Usuario;
 
 public class Login extends JFrame {
-    private JTextField usernameField;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTextField usernameField;
     private JPasswordField passwordField;
     private Connection connection;
     
@@ -52,7 +56,7 @@ public class Login extends JFrame {
         add(loginButton);
 
         try {
-            String url = "jdbc:h2:tcp://localhost/C:/Users/claud/eclipse-workspace/MiniHomeBanking_Milos/h2/base_de_datos/banco";
+            String url = "jdbc:h2:tcp://localhost/C:/Users/Usuario/HolaLoco/h2/base_de_datos/banco";
             String user = "sa";
             String passwordDB = "";
             connection = DriverManager.getConnection(url, user, passwordDB);

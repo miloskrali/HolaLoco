@@ -13,7 +13,11 @@ import db.TarjetaDAOH2;
 
 public class UXPrincipal extends JFrame {
 
-    private JTabbedPane tabbedPane;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTabbedPane tabbedPane;
     private PanelCuenta panelCuenta;
     private PanelTransferencia panelTransferencia;
     private PanelResumen panelResumen;

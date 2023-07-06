@@ -8,10 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import entidades.Cuenta;
 import entidades.Tarjeta;
 import excepciones.DAOException;
 import excepciones.DuplicadoException;
+import excepciones.UsuarioNoExistenteException;
 
 public class TarjetaDAOH2 implements TarjetaDAO {
 
@@ -24,7 +24,7 @@ public class TarjetaDAOH2 implements TarjetaDAO {
     public TarjetaDAOH2() {
     }
 
-    public void agregarTarjeta(Tarjeta tarjeta) throws DAOException, DuplicadoException {
+    public void agregarTarjeta(Tarjeta tarjeta) throws DAOException, DuplicadoException, UsuarioNoExistenteException {
     	int numero = tarjeta.getNumero();
         double disponible = tarjeta.getDisponible();
         double saldoPagar = tarjeta.getSaldoPagar();
@@ -34,9 +34,18 @@ public class TarjetaDAOH2 implements TarjetaDAO {
         Connection c = DBManager.connect();
         try {
             Statement s = c.createStatement();
+            String verificarUsuarioSql = "SELECT COUNT(*) FROM usuarios WHERE dni = " + dni;
+            ResultSet resultado = s.executeQuery(verificarUsuarioSql);
+            resultado.next();
+            int cuentaUsuarios = resultado.getInt(1);
+            
+            if (cuentaUsuarios == 0) {
+                throw new UsuarioNoExistenteException(); 
+            }else {
             String sql = "INSERT INTO tarjetas (numeroTarjeta, disponible, saldoPagar, dniTitular) VALUES ('" + numero + "', '" + disponible + "', '"+saldoPagar+"','" + dni + "' )";
             s.executeUpdate(sql);
             c.commit();
+            }
         } catch (SQLException e) {
             try {
                 if(e.getErrorCode() == 23505) {
@@ -57,7 +66,7 @@ public class TarjetaDAOH2 implements TarjetaDAO {
     }
 
     public void eliminarTarjeta(int numeroTarjeta) throws DAOException {
-        String query = "DELETE FROM tarjetas WHERE numeroTarjeta = '"+numeroTarjeta+"'";
+        String query = "DELETE FROM tarjetas WHERE numeroTarjeta = "+numeroTarjeta;
         Connection c = DBManager.connect();        
         try {
             Statement s = c.createStatement();

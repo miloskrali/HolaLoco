@@ -11,22 +11,33 @@ import entidades.Cuenta;
 import excepciones.DAOException;
 import excepciones.DuplicadoException;
 import excepciones.SaldoInsuficienteException;
+import excepciones.UsuarioNoExistenteException;
 
 public class CuentaDAOH2 implements CuentaDAO {
 	
-    public void crearCuenta(Cuenta cuenta) throws DAOException, DuplicadoException {
+    public void crearCuenta(Cuenta cuenta) throws DAOException, DuplicadoException, UsuarioNoExistenteException {
         int dni = cuenta.getDni();
         String tipo= cuenta.getTipo();
         int numeroCuenta = cuenta.getNumeroCuenta();
         Double saldo = cuenta.getSaldo();
 
         Connection c = DBManager.connect();
+        
         try {
-            Statement s = c.createStatement();
-            String sql = "INSERT INTO cuentas (dni, tipoCuenta, numeroCuenta, saldo) VALUES ('" + dni + "', '"
-                    + tipo + "', '" + numeroCuenta + "', '" + saldo + "')";
-            s.executeUpdate(sql);
-            c.commit();
+        	   Statement s = c.createStatement();
+               String verificarUsuarioSql = "SELECT COUNT(*) FROM usuarios WHERE dni = " + dni;
+               ResultSet resultado = s.executeQuery(verificarUsuarioSql);
+               resultado.next();
+               int cuentaUsuarios = resultado.getInt(1);
+               
+               if (cuentaUsuarios == 0) {
+                   throw new UsuarioNoExistenteException();
+               }else {
+               String insertarCuentaSql = "INSERT INTO cuentas (dni, tipoCuenta, numeroCuenta, saldo) VALUES ('" + dni + "', '"
+                       + tipo + "', '" + numeroCuenta + "', '" + saldo + "')";
+               s.executeUpdate(insertarCuentaSql);
+               c.commit();
+               }
         } catch (SQLException e) {
             try {
                 if (e.getErrorCode() == 23505) {
@@ -37,7 +48,7 @@ public class CuentaDAOH2 implements CuentaDAO {
             } catch (SQLException e1) {
                 e.printStackTrace();
             }
-        } finally {
+		} finally {
             try {
                 c.close();
             } catch (SQLException e1) {
@@ -46,8 +57,8 @@ public class CuentaDAOH2 implements CuentaDAO {
         }
     }
 
-    public void borrarCuenta(int dni) throws DAOException {
-        String sql = "DELETE FROM usuarios WHERE dni = '" + dni + "'";
+    public void borrarCuenta(int numeroCuenta) throws DAOException {
+        String sql = "DELETE FROM cuentas WHERE numerocuenta = '" + numeroCuenta + "'";
         Connection c = DBManager.connect();
         try {
             Statement s = c.createStatement();

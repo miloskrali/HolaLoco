@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class DBManager {
 
 	private static final String DB_DRIVER = "org.h2.Driver";
-	private static final String DB_BASE_URL = "jdbc:h2:tcp://localhost/C:/Users/claud/eclipse-workspace/MiniHomeBanking_Milos/h2/base_de_datos/banco";
+	private static final String DB_BASE_URL = "jdbc:h2:tcp://localhost/C:/Users/Usuario/HolaLoco/h2/base_de_datos/banco";
 	private static final String DB_USERNAME = "sa";
 	private static final String DB_PASSWORD = "";
 

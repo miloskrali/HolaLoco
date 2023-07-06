@@ -3,14 +3,14 @@ package db;
 import java.util.List;
 
 import entidades.Cuenta;
-import entidades.Usuario;
 import excepciones.DAOException;
 import excepciones.DuplicadoException;
 import excepciones.SaldoInsuficienteException;
+import excepciones.UsuarioNoExistenteException;
 
 public interface CuentaDAO {
 
-    void crearCuenta(Cuenta cuenta) throws DAOException, DuplicadoException;
+    void crearCuenta(Cuenta cuenta) throws DAOException, DuplicadoException, UsuarioNoExistenteException;
 
     void borrarCuenta(int dni) throws DAOException;
 

@@ -14,12 +14,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import db.TarjetaDAO;
-import db.TarjetaDAOH2;
 import entidades.Tarjeta;
+import excepciones.DAOException;
+import excepciones.DuplicadoException;
+import excepciones.UsuarioNoExistenteException;
 
 public class PanelTarjetas extends JPanel implements ActionListener {
 
-    private JTable tablaTarjetas;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTable tablaTarjetas;
     private TableModelTarjetas modelo;
     private TarjetaDAO tarjetaDAO;
     private JScrollPane scroll;
@@ -83,26 +89,35 @@ public class PanelTarjetas extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-    	TarjetaDAOH2 dao = (TarjetaDAOH2) tarjetaDAO;
         if (e.getSource() == buttonBorrar) {
             int filaSeleccionada = this.tablaTarjetas.getSelectedRow();
-            Tarjeta tarjeta = this.modelo.getContenido().get(filaSeleccionada);
+            int clave = (int) modelo.getValueAt(filaSeleccionada, 1);
+            modelo.getContenido().remove(filaSeleccionada);
+            modelo.fireTableDataChanged();
             try {
-                modelo.getContenido().remove(filaSeleccionada);
-                modelo.fireTableDataChanged();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al borrar la tarjeta: " + ex.getMessage());
+                tarjetaDAO.eliminarTarjeta(clave);
+            } catch (DAOException e1) {
+				e1.printStackTrace();
             }
         } else if (e.getSource() == buttonAgregar) {
             try {
-                Tarjeta tarjeta = crearTarjeta();
-                modelo.getContenido().add(tarjeta);
-                modelo.fireTableDataChanged();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al agregar la tarjeta: " + ex.getMessage());
-            }
+            	Tarjeta nuevaTarjeta= crearTarjeta();
+                try {
+					tarjetaDAO.agregarTarjeta(nuevaTarjeta);
+					modelo.getContenido().add(nuevaTarjeta);
+		            modelo.fireTableDataChanged();
+				} catch (UsuarioNoExistenteException e1) {
+					JOptionPane.showMessageDialog(this, "El numero de cuenta no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+               
+            } catch (DuplicadoException ex) {
+            	JOptionPane.showMessageDialog(this, "El numero de tarjeta ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (DAOException e1) {
+				e1.printStackTrace();
+			}
         }
     }
+
 
     private Tarjeta crearTarjeta() {
         int dni = obtenerDniDesdeInput();
@@ -120,6 +135,7 @@ public class PanelTarjetas extends JPanel implements ActionListener {
 
     private int obtenerNumeroTarjetaDesdeInput() {
         String numeroTarjetaStr = JOptionPane.showInputDialog("Ingrese el número de tarjeta: ");
+        
         return Integer.parseInt(numeroTarjetaStr);
     }
 

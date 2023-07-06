@@ -18,7 +18,11 @@ import excepciones.DuplicadoException;
 
 public class PanelUsuarios extends JPanel implements ActionListener {
 
-    private JTable tablaUsuarios;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTable tablaUsuarios;
     private TableModelUsuario modelo;
     private UsuarioDAO usuarioDAO;
     private JScrollPane scroll;
@@ -95,10 +99,15 @@ public class PanelUsuarios extends JPanel implements ActionListener {
 
         if (e.getSource() == buttonBorrar) {
             int filaSeleccionada = this.tablaUsuarios.getSelectedRow();
-            Usuario usuario = this.modelo.getContenido().get(filaSeleccionada);
-
+            int clave = (int) modelo.getValueAt(filaSeleccionada, 0);
             this.modelo.getContenido().remove(filaSeleccionada);
             modelo.fireTableDataChanged();
+            try {
+				usuarioDAO.borraUsuario(clave);
+			} catch (DAOException e1) {
+				e1.printStackTrace();
+			}
         }
+
     }
 }
